@@ -12,9 +12,9 @@ variable "template_id" {
 #     default = ""
 # }
 variable "proxmox_password" {
-  default = ""
+  default = "Par240XXX"
 }
 
 variable "proxmox_endpoint" {
-    default = ""
+    default = "https://192.168.111.185:8006/api2/json"
 }

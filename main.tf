@@ -26,7 +26,7 @@ resource "proxmox_virtual_environment_vm" "ubuntu" {
     }
     ip_config {
       ipv4 {
-        address = "192.168.111.185${1 + count.index + 1}/24"
+        address = "192.168.111.18${5 + count.index + 1}/24"
         gateway = "192.168.111.1"
       }
     }
