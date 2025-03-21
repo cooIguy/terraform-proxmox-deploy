@@ -1,51 +1,66 @@
 provider "proxmox" {
-  endpoint = var.proxmox_endpoint  # Set the Proxmox endpoint URL
-  username = "root@pam"  # Use your specific username for Proxmox
-  password = var.proxmox_password  # Set this in your variables.tf file for sensitive information
-  insecure = true
-
-  ssh {
-    agent = true
-  }
+  pm_api_url  = var.pm_api_url
+  pm_api_token_id = var.pm_api_token_id
+  pm_api_token_secret = var.pm_api_token_secret
+  pm_tls_insecure = true
+  pm_parallel = 10
 }
 
-resource "proxmox_virtual_environment_download_file" "ubuntu_cloud_image" {
-  content_type = "iso"
-  datastore_id = "local"
-  node_name    = var.proxmox_host  # Replace with the hostname of your Proxmox node
+resource "proxmox_vm_qemu" "vm" {
+#Hardware Setup
 
-  url = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"  # You can replace with your desired Ubuntu version
-}
+  target_node = var.target_node
+  vmid    = "20${count.index + 1}"
+  count   = var.vm_count
+  name    = var.vm_name
+  cores   = var.cpu_cores
+  memory  = var.memory 
+  agent   = 1
+  clone   = var.template_name
+  full_clone  = true 
+  onboot = true
+  scsihw   = "virtio-scsi-pci"
 
-resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
-  count     = 3  # Define the number of VMs you want to create (3 VMs in this case)
-  name      = "test-ubuntu-${count.index + 1}"
-  node_name = var.proxmox_host  # Replace with the hostname of your Proxmox node
+   network {
+    id = 0
+    model = "virtio"
+    bridge = var.network_bridge
+    #tag =        ##Can be added if needed
+    }
 
-  initialization {
-    ip_config {
-      ipv4 {
-        address = "192.168.111.${186 + count.index}/24"  # Dynamically assign IPs starting from 192.168.111.186
-        gateway = "192.168.111.1"  # Replace with your gateway IP
+#Disk setup
+
+disks {
+    ide {
+      ide3 {
+        cloudinit {
+        storage = var.storage
       }
     }
+ }
+        scsi {
+            scsi0 {
+                disk {
+                size    = var.disk_size
+                storage = var.storage
+          }
+        }
+      }
+    } 
 
-    user_account {
-      username = "ubuntu"
-      keys     = [var.ssh_key]  # Replace with your SSH key variable
-    }
+  lifecycle {
+    ignore_changes = [
+      network,
+    ]
   }
 
-  disk {
-    datastore_id = "local-lvm"
-    file_id      = proxmox_virtual_environment_download_file.ubuntu_cloud_image.id
-    interface    = "virtio0"
-    iothread     = true
-    discard      = "on"
-    size         = 20
-  }
 
-  network_device {
-    bridge = "vmbr0"
-  }
+# Cloud init configuration
+
+  ciuser = var.ciuser
+  ipconfig0 = "ip=192.168.111.18${count.index + 5}/24,gw=192.168.111.1"
+  sshkeys = <<EOF
+     ${var.ssh_public_key}
+  EOF
+
 }
