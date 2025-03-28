@@ -1,0 +1,12 @@
+---
+- name: Deploy Docker and Portainer to 1 vm
+  hosts: portainer
+  become: yes
+  roles:
+    - docker
+    - portainer
+- name: update vms
+  hosts: all
+  become: yes
+  roles:
+    - update

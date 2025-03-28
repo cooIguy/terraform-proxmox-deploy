@@ -1,0 +1,13 @@
+[portainer]
+192.168.111.186
+
+[docker]
+192.168.111.186
+192.168.111.187
+192.168.111.188
+
+[all:vars]
+ansible_connection='ssh'
+ansible_ssh_port='22'
+ansible_user='ubuntu'
+ansible_ssh_private_key_file=/home/sysadmin/.ssh/id_ed25519
