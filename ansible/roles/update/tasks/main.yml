@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 - name: Upgrade the OS (apt-get dist-upgrade)
   apt:
     update_cache: yes
@@ -7,3 +8,14 @@
 - name: Reboot a slow machine that might have lots of updates to apply
   reboot:
     reboot_timeout: 60   
+=======
+- name: Upgrade the OS (apt-get dist-upgrade)
+  apt:
+    update_cache: yes
+    upgrade: dist
+    autoremove: yes
+
+- name: Reboot a slow machine that might have lots of updates to apply
+  reboot:
+    reboot_timeout: 60   
+>>>>>>> 48ea010a5ef43be9cb1ab2f0a83e53729dd43716

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 - name: Deploy Docker and Portainer to 1 vm
   hosts: portainer
@@ -10,3 +11,15 @@
   become: yes
   roles:
     - update
+=======
+---
+- hosts: all
+  become: true
+  vars:
+    container_count: 4
+    default_container_name: docker
+    default_container_image: ubuntu
+    default_container_command: sleep 1
+
+    
+>>>>>>> 48ea010a5ef43be9cb1ab2f0a83e53729dd43716
